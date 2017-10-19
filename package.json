@@ -1,0 +1,13 @@
+{
+  "name": "carto_waze_lambda_connector",
+  "version": "1.0.0",
+  "description": "Carto Waze Lambda Connector",
+  "author": "cayetanobv",
+  "license": "",
+  "dependencies": {
+    "serverless-python-requirements": "^3.0.5"
+  },
+  "devDependencies": {
+    "serverless-python-requirements": "^3.0.7"
+  }
+}
