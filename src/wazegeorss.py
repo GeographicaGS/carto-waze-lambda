@@ -40,3 +40,4 @@ class WazeGeoRSS:
     def __get_waze_georss_url(api_config):
         req_url = '{0}?tk={1}&ccp_partner_name={2}&format={3}&types={4}&polygon={5}'
         return req_url.format(*api_config)
+
