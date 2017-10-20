@@ -33,6 +33,9 @@ CREATE TABLE waze_data_alerts (
   georss_date timestamp without time zone
 );
 
+CREATE INDEX waze_data_alerts_georssdate_idx 
+  ON waze_data_alerts(georss_date);
+
 SELECT CDB_Cartodbfytable('user', 'waze_data_alerts');
 
 -- Example:
@@ -79,6 +82,9 @@ CREATE TABLE waze_data_jams (
   blockingalert_uuid text,
   georss_date timestamp without time zone
 );
+
+CREATE INDEX waze_data_jams_georssdate_idx 
+  ON waze_data_jams(georss_date);
 
 SELECT CDB_Cartodbfytable('user', 'waze_data_jams');
 
@@ -142,5 +148,8 @@ CREATE TABLE waze_data_irrgs (
   alerts_uuid text[],
   georss_date timestamp without time zone
 );
+
+CREATE INDEX waze_data_irrgs_georssdate_idx 
+  ON waze_data_irrgs(georss_date);
 
 SELECT CDB_Cartodbfytable('user', 'waze_data_irrgs');
