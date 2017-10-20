@@ -1,23 +1,29 @@
 # Carto Waze Lambda Connector
 
-## Waze
 Developed according to "Waze Traffic-data Specification Document (Version 2.7.2)".
 
 ## Usage
 
-Update function
+AWS Lambda deploy function
 
-```bash
+```
 $ serverless deploy -v --stage prod
 ```
 
-Run from command line
+AWS Lambda  invoke function:
 
-```bash
-$ serverless invoke -f carto-waze-lambda-srv -l --stage prod
+```
+$ serverless invoke -f georss -l --stage prod
+```
+
+AWS Lambda update function (without AWS CloudFormation because is slow):
+
+```
+$ serverless deploy function -f georss --stage prod -v
 ```
 
 Run function without AWS Lambda to test:
-```bash
+
+```
 $ python3 run_handler_dev.py
 ```
