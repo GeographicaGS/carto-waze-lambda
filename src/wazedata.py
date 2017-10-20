@@ -33,13 +33,26 @@ class WazeData:
     @staticmethod
     def __build_timestamp(milsecs, tm_frmt='%Y-%m-%dT%H:%M:%S.%fZ'):
         secs = milsecs / 1000.0
-        return datetime.fromtimestamp(secs).strftime(tm_frmt)
+        return datetime.utcfromtimestamp(secs).strftime(tm_frmt)
         
     @staticmethod
     def __format_street_names(street_name):
         if street_name and isinstance(street_name, str):
             return street_name.replace("'", "\\'")
-
+        
+    @staticmethod
+    def __quote_list(data):
+        return ["'{0}'".format(dt) for dt in data]
+    
+    @property
+    def get_time_range(self):
+        start_time = self.__build_timestamp(self.__data.get('startTimeMillis'))
+        end_time = self.__build_timestamp(self.__data.get('endTimeMillis'))
+        return {
+            'start_time': start_time,
+            'end_time': end_time
+            }
+    
     def __get_raw_alerts(self):
         return self.__data.get('alerts')
 
@@ -59,6 +72,7 @@ class WazeData:
                 geom_pt = alert.get('location')
                 
                 date_wz = alert.get('pubMillis')
+                tm_rng = self.get_time_range
                 
                 alerts.append({
                     'the_geom': json.dumps(self.__build_geojson_point(geom_pt)),
@@ -76,7 +90,8 @@ class WazeData:
                     'type': alert.get('type'),
                     'subtype': alert.get('subType'),
                     'uuid': alert.get('uuid'),
-                    'jam_uuid':  alert.get('jamUuid')
+                    'jam_uuid':  alert.get('jamUuid'),
+                    'georss_date': tm_rng.get('start_time')
                 }) 
             
             return alerts
@@ -91,6 +106,7 @@ class WazeData:
                 geom_ln = jam.get('line')
                 
                 date_wz = jam.get('pubMillis')
+                tm_rng = self.get_time_range
               
                 jams.append({
                     'the_geom': json.dumps(self.__build_geojson_line(geom_ln)),
@@ -108,7 +124,8 @@ class WazeData:
                     'type': jam.get('type'),
                     'turntype': jam.get('turnType'),
                     'uuid': jam.get('uuid'),
-                    'blockingalert_uuid':  jam.get('blockingAlertUuid')
+                    'blockingalert_uuid':  jam.get('blockingAlertUuid'),
+                    'georss_date': tm_rng.get('start_time')
                 }) 
             
             return jams
@@ -124,10 +141,14 @@ class WazeData:
                 
                 dt_date_wz = irrg.get('detectionDateMillis')
                 up_date_wz = irrg.get('updateDateMillis')
+                tm_rng = self.get_time_range
                 
                 alerts_arr = irrg.get('alerts')
                 if alerts_arr:
-                    alerts_uuid = [al.get('uuid') for al in alerts_arr]
+                    alerts_uuid = ','.join(self.__quote_list(
+                        [al.get('uuid') for al in alerts_arr]
+                        )
+                    )
                 else:
                     alerts_uuid = None
               
@@ -155,7 +176,8 @@ class WazeData:
                     'id': irrg.get('id'),
                     'ncomments': irrg.get('nComments'),
                     'nimages': irrg.get('nImages'),
-                    'nthumbsup': irrg.get('nThumbsUp')
+                    'nthumbsup': irrg.get('nThumbsUp'),
+                    'georss_date': tm_rng.get('start_time')
                 }) 
             
             return irrgs
