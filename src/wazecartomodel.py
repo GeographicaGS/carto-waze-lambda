@@ -65,16 +65,16 @@ class WazeCartoModel(CartoModel):
             irrgs_vl = [
                 """(ST_SetSRID(ST_GeomFromGeoJSON('{the_geom}'), 4326),
                 '{country}','{city}',{speed},{regularspeed},{length},{jamlevel},
-                {severity},{highway},{seconds},{delayseconds},
+                {severity},{highway},{trend},{seconds},{delayseconds},
                 '{detectiondate}'::timestamp,'{updatedate}'::timestamp,
                 E'{startnode}',E'{endnode}',E'{street}',{ncomments},{nimages}, 
                 {nthumbsup},{id},'{type}',{alertscount},ARRAY[{alerts_uuid}]::text[],
-                '{blockingalert_uuid}','{georss_date}'::timestamp)    
+                '{georss_date}'::timestamp)    
                 """.format(**irrg) for irrg in irrgs_data
             ]
 
             sql = """
-                INSERT INTO waze_data_jams
+                INSERT INTO waze_data_irrgs
                 (the_geom, country, city, speed, regularspeed, length, jamlevel, 
                 severity, highway, trend, seconds, delayseconds, detectiondate,
                 updatedate, startnode, endnode, street, ncomments, nimages, 
