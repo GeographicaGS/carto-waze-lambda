@@ -9,7 +9,7 @@
 # For full config options, check the docs:
 #    docs.serverless.com
 
-service: carto-waze-lambda
+service: carto-waze-lambda-srv
 
 provider:
   name: aws
@@ -27,12 +27,12 @@ functions:
     handler: src.handler.carto_waze_lambda_handler
     events:
       - schedule: rate(2 minutes)
-    environment:
-      CARTO_API_KEY: ${env:CARTO_API_KEY}
-      CARTO_USER: ${env:CARTO_USER}
-      WAZE_API_URL: ${env:WAZE_API_URL}
-      WAZE_TKN: ${env:WAZE_TKN}
-      WAZE_PARTNER: ${env:WAZE_PARTNER}
+    # environment:
+    #   CARTO_API_KEY: ${env:CARTO_API_KEY}
+    #   CARTO_USER: ${env:CARTO_USER}
+    #   WAZE_API_URL: ${env:WAZE_API_URL}
+    #   WAZE_TKN: ${env:WAZE_TKN}
+    #   WAZE_PARTNER: ${env:WAZE_PARTNER}
 
 plugins:
   - serverless-python-requirements
