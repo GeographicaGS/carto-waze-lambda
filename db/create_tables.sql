@@ -29,7 +29,8 @@ CREATE TABLE waze_data_alerts (
   type text,
   subtype text,
   uuid text,
-  jam_uuid text
+  jam_uuid text,
+  georss_date timestamp without time zone
 );
 
 SELECT CDB_Cartodbfytable('user', 'waze_data_alerts');
@@ -75,7 +76,8 @@ CREATE TABLE waze_data_jams (
   type text,
   turntype text,
   uuid text,
-  blockingalert_uuid text
+  blockingalert_uuid text,
+  georss_date timestamp without time zone
 );
 
 SELECT CDB_Cartodbfytable('user', 'waze_data_jams');
@@ -137,7 +139,8 @@ CREATE TABLE waze_data_irrgs (
   id bigint,
   type text,
   alertscount integer,
-  alerts_uuid text[]
+  alerts_uuid text[],
+  georss_date timestamp without time zone
 );
 
 SELECT CDB_Cartodbfytable('user', 'waze_data_irrgs');
