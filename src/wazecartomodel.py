@@ -69,7 +69,7 @@ class WazeCartoModel(CartoModel):
                 '{detectiondate}'::timestamp,'{updatedate}'::timestamp,
                 E'{startnode}',E'{endnode}',E'{street}',{ncomments},{nimages}, 
                 {nthumbsup},{id},'{type}',{alertscount},ARRAY[{alerts_uuid}]::text[],
-                '{blockingalert_uuid}','{georss_date}'::timestamp)    
+                '{georss_date}'::timestamp)    
                 """.format(**irrg) for irrg in irrgs_data
             ]
 

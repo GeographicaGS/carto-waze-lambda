@@ -4,7 +4,7 @@ Developed according to "Waze Traffic-data Specification Document (Version 2.7.2)
 
 ## Usage
 
-AWS Lambda deploy function
+AWS Lambda deploy function:
 
 ```
 $ serverless deploy -v --stage prod
