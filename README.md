@@ -22,7 +22,7 @@ AWS Lambda update function (without AWS CloudFormation because is slow):
 $ serverless deploy function -f georss --stage prod -v
 ```
 
-Run function without AWS Lambda to test:
+Run function without AWS Lambda (only for development purpose):
 
 ```
 $ python3 run_handler_dev.py
