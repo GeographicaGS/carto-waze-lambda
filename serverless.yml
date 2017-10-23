@@ -25,6 +25,7 @@ package:
 functions:
   georss:
     handler: src.handler.carto_waze_lambda_handler
+    timeout: 12
     events:
       - schedule: rate(2 minutes)
     # environment:
