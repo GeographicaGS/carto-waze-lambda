@@ -24,7 +24,7 @@ class WazeCartoModel(CartoModel):
             ]
 
             sql = """
-                INSERT INTO waze_data_alerts_2
+                INSERT INTO waze_data_alerts
                 (the_geom, country, city, reportdescription, confidence, reportrating,
                  reliability, date, street, roadtype, magvar, nthumbsup, type,
                  subtype, uuid, jam_uuid, georss_date)
@@ -48,7 +48,7 @@ class WazeCartoModel(CartoModel):
             ]
 
             sql = """
-                INSERT INTO waze_data_jams_2
+                INSERT INTO waze_data_jams
                 (the_geom, country, city, speed, length, level, delay,
                  date, startnode, endnode, street, roadtype, type, turntype, uuid,
                  blockingalert_uuid, georss_date)
@@ -74,7 +74,7 @@ class WazeCartoModel(CartoModel):
             ]
 
             sql = """
-                INSERT INTO waze_data_irrgs_2
+                INSERT INTO waze_data_irrgs
                 (the_geom, country, city, speed, regularspeed, length, jamlevel,
                 severity, highway, trend, seconds, delayseconds, detectiondate,
                 updatedate, startnode, endnode, street, ncomments, nimages,
