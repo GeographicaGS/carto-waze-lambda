@@ -4,46 +4,46 @@ from datetime import datetime
 
 class WazeData:
     """
-    Waze data model according to "Waze Traffic-data 
+    Waze data model according to "Waze Traffic-data
     Specification Document (Version 2.7.2)".
-    
+
     Waze traffic data model features:
         - Alerts.
         - Jams.
         - irregularities.
     """
-    
+
     def __init__(self, data):
         self.__data = data
-    
+
     @staticmethod
     def __build_geojson_line(line):
         return {
-            "coordinates": [[pt.get('x'), pt.get('y')] for pt in line], 
-            "type": "LineString"
+            'coordinates': [[pt.get('x'), pt.get('y')] for pt in line],
+            'type': 'LineString'
             }
-    
+
     @staticmethod
     def __build_geojson_point(point):
         return {
-            "coordinates": [point.get('x'), point.get('y')], 
-            "type": "Point"
+            'coordinates': [point.get('x'), point.get('y')],
+            'type': 'Point'
             }
-    
+
     @staticmethod
     def __build_timestamp(milsecs, tm_frmt='%Y-%m-%dT%H:%M:%S.%fZ'):
         secs = milsecs / 1000.0
         return datetime.utcfromtimestamp(secs).strftime(tm_frmt)
-        
+
     @staticmethod
     def __format_street_names(street_name):
         if street_name and isinstance(street_name, str):
             return street_name.replace("'", "\\'")
-        
+
     @staticmethod
     def __quote_list(data):
         return ["'{0}'".format(dt) for dt in data]
-    
+
     @property
     def get_time_range(self):
         start_time = self.__build_timestamp(self.__data.get('startTimeMillis'))
@@ -52,7 +52,7 @@ class WazeData:
             'start_time': start_time,
             'end_time': end_time
             }
-    
+
     def __get_raw_alerts(self):
         return self.__data.get('alerts')
 
@@ -64,16 +64,16 @@ class WazeData:
 
     def build_alerts(self):
         alerts_raw = self.__get_raw_alerts()
-        
+
         if alerts_raw:
             alerts = []
-            
+
             for alert in alerts_raw:
                 geom_pt = alert.get('location')
-                
+
                 date_wz = alert.get('pubMillis')
                 tm_rng = self.get_time_range
-                
+
                 alerts.append({
                     'the_geom': json.dumps(self.__build_geojson_point(geom_pt)),
                     'date': self.__build_timestamp(date_wz),
@@ -92,22 +92,22 @@ class WazeData:
                     'uuid': alert.get('uuid'),
                     'jam_uuid':  alert.get('jamUuid'),
                     'georss_date': tm_rng.get('start_time')
-                }) 
-            
+                })
+
             return alerts
 
     def build_jams(self):
         jams_raw = self.__get_raw_jams()
-        
+
         if jams_raw:
             jams = []
-            
+
             for jam in jams_raw:
                 geom_ln = jam.get('line')
-                
+
                 date_wz = jam.get('pubMillis')
                 tm_rng = self.get_time_range
-              
+
                 jams.append({
                     'the_geom': json.dumps(self.__build_geojson_line(geom_ln)),
                     'date': self.__build_timestamp(date_wz),
@@ -126,32 +126,30 @@ class WazeData:
                     'uuid': jam.get('uuid'),
                     'blockingalert_uuid':  jam.get('blockingAlertUuid'),
                     'georss_date': tm_rng.get('start_time')
-                }) 
-            
+                })
+
             return jams
 
     def build_irrgs(self):
         irrgs_raw = self.__get_raw_irrgs()
-        
+
         if irrgs_raw:
             irrgs = []
-            
+
             for irrg in irrgs_raw:
                 geom_ln = irrg.get('line')
-                
+
                 dt_date_wz = irrg.get('detectionDateMillis')
                 up_date_wz = irrg.get('updateDateMillis')
                 tm_rng = self.get_time_range
-                
+
                 alerts_arr = irrg.get('alerts')
                 if alerts_arr:
                     alerts_uuid = ','.join(self.__quote_list(
-                        [al.get('uuid') for al in alerts_arr]
-                        )
-                    )
+                        [al.get('uuid') for al in alerts_arr]))
                 else:
                     alerts_uuid = None
-              
+
                 irrgs.append({
                     'the_geom': json.dumps(self.__build_geojson_line(geom_ln)),
                     'detectiondate': self.__build_timestamp(dt_date_wz),
@@ -178,7 +176,6 @@ class WazeData:
                     'nimages': irrg.get('nImages'),
                     'nthumbsup': irrg.get('nThumbsUp'),
                     'georss_date': tm_rng.get('start_time')
-                }) 
-            
+                })
+
             return irrgs
-            
