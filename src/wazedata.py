@@ -88,7 +88,7 @@ class WazeData:
                     'magvar': alert.get('magvar'),
                     'nthumbsup': alert.get('nThumbsUp'),
                     'type': alert.get('type'),
-                    'subtype': alert.get('subType'),
+                    'subtype': alert.get('subtype'),
                     'uuid': alert.get('uuid'),
                     'jam_uuid':  alert.get('jamUuid'),
                     'georss_date': tm_rng.get('start_time')
