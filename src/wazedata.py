@@ -1,3 +1,9 @@
+"""
+Carto Waze Lambda Connector
+
+Developed by Geographica, 2017-2018.
+"""
+
 import json
 from datetime import datetime
 

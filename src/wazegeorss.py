@@ -1,4 +1,8 @@
+"""
+Carto Waze Lambda Connector
 
+Developed by Geographica, 2017-2018.
+"""
 
 class WazeGeoRSSException(Exception):
     pass
@@ -6,7 +10,8 @@ class WazeGeoRSSException(Exception):
 
 class WazeGeoRSS:
 
-    def __init__(self, api_url, api_tkn, api_partner_name, api_frmt, api_types, api_poly):
+    def __init__(self, api_url, api_tkn, api_partner_name, api_frmt, api_types,
+                 api_poly):
         self.__api_url = api_url
         self.__api_tkn = api_tkn
         self.__api_partner_name = api_partner_name

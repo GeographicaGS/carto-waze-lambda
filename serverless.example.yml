@@ -1,0 +1,43 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+
+service: carto-waze-lambda-mycity
+
+provider:
+  name: aws
+  runtime: python3.6
+  region: eu-west-1
+
+package:
+ include:
+   - src/**
+ exclude:
+   - config.env
+
+functions:
+  georss:
+    handler: src.handler.carto_waze_lambda_handler
+    timeout: 12
+    events:
+      - schedule: rate(2 minutes)
+    # environment:
+    #   CARTO_API_KEY: ${env:CARTO_API_KEY}
+    #   CARTO_USER: ${env:CARTO_USER}
+    #   WAZE_API_URL: ${env:WAZE_API_URL}
+    #   WAZE_TKN: ${env:WAZE_TKN}
+    #   WAZE_PARTNER: ${env:WAZE_PARTNER}
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
