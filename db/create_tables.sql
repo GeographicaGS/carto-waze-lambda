@@ -36,6 +36,9 @@ CREATE TABLE waze_data_alerts (
 CREATE INDEX waze_data_alerts_georssdate_idx
   ON waze_data_alerts(georss_date);
 
+CREATE INDEX waze_data_alerts_date_idx
+  ON waze_data_alerts(date);
+
 SELECT CDB_Cartodbfytable('user', 'waze_data_alerts');
 
 -- Example:
