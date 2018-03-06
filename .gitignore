@@ -2,6 +2,7 @@
 config.env
 node_modules/
 .serverless/
+serverless.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
