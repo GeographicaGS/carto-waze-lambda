@@ -9,7 +9,7 @@
 # For full config options, check the docs:
 #    docs.serverless.com
 
-service: carto-waze-lambda-mycity
+service: carto-waze-mycity
 
 provider:
   name: aws
