@@ -5,6 +5,7 @@
   "author": "cayetanobv",
   "license": "",
   "dependencies": {
+    "serverless": "^1.26.1",
     "serverless-python-requirements": "^3.0.5"
   },
   "devDependencies": {
