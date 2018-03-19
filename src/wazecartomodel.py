@@ -22,7 +22,7 @@ class WazeCartoModel(CartoModel):
 
             alerts_vl = [
                 """(ST_SetSRID(ST_GeomFromGeoJSON('{the_geom}'), 4326),
-                '{country}','{city}','{reportdescription}',{confidence},
+                '{country}',E'{city}','{reportdescription}',{confidence},
                 {reportrating},{reliability},'{date}'::timestamp,E'{street}',
                 {roadtype},{magvar},{nthumbsup},'{type}','{subtype}','{uuid}',
                 '{jam_uuid}','{georss_date}'::timestamp)
@@ -47,7 +47,7 @@ class WazeCartoModel(CartoModel):
 
             jams_vl = [
                 """(ST_SetSRID(ST_GeomFromGeoJSON('{the_geom}'), 4326),
-                '{country}','{city}',{speed},{length},{level},{delay},
+                '{country}',E'{city}',{speed},{length},{level},{delay},
                 '{date}'::timestamp,E'{startnode}',E'{endnode}',
                 E'{street}',{roadtype},'{type}','{turntype}','{uuid}',
                 '{blockingalert_uuid}','{georss_date}'::timestamp)
@@ -72,7 +72,7 @@ class WazeCartoModel(CartoModel):
 
             irrgs_vl = [
                 """(ST_SetSRID(ST_GeomFromGeoJSON('{the_geom}'), 4326),
-                '{country}','{city}',{speed},{regularspeed},{length},{jamlevel},
+                '{country}',E'{city}',{speed},{regularspeed},{length},{jamlevel},
                 {severity},{highway},{trend},{seconds},{delayseconds},
                 '{detectiondate}'::timestamp,'{updatedate}'::timestamp,
                 E'{startnode}',E'{endnode}',E'{street}',{ncomments},{nimages},
