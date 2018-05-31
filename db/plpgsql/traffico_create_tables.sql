@@ -42,10 +42,10 @@ BEGIN
   _carto_params_jm = format('%L', _jams_tb);
   _carto_params_ir = format('%L', _irregs_tb);
 
-  IF carto_user then
-    _carto_params_al = format('%L, %s', city_prefix, _carto_params_al);
-    _carto_params_jm = format('%L, %s', city_prefix, _carto_params_jm);
-    _carto_params_ir = format('%L, %s', city_prefix, _carto_params_ir);
+  IF carto_user IS NOT NULL then
+    _carto_params_al = format('%L, %s', carto_user, _carto_params_al);
+    _carto_params_jm = format('%L, %s', carto_user, _carto_params_jm);
+    _carto_params_ir = format('%L, %s', carto_user, _carto_params_ir);
   END IF;
 
   IF clean_tables then
