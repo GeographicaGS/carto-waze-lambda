@@ -22,9 +22,9 @@ class WazeCartoModel(CartoModel):
 
             alerts_vl = [
                 """(ST_SetSRID(ST_GeomFromGeoJSON('{the_geom}'), 4326),
-                '{country}',E'{city}','{reportdescription}',{confidence},
+                '{country}',E'{city}',E'{reportdescription}',{confidence},
                 {reportrating},{reliability},'{date}'::timestamp,E'{street}',
-                {roadtype},{magvar},{nthumbsup},'{type}','{subtype}','{uuid}',
+                {roadtype},{magvar},{nthumbsup},E'{type}',E'{subtype}','{uuid}',
                 '{jam_uuid}','{georss_date}'::timestamp)
                 """.format(**alert) for alert in alerts_data
             ]

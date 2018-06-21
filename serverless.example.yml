@@ -17,10 +17,12 @@ provider:
   region: eu-west-1
 
 package:
- include:
+  include:
    - src/**
- exclude:
+  exclude:
    - config.env
+   - node_modules/**
+   - '!node_modules/node-fetch/**'
 
 functions:
   georss:
