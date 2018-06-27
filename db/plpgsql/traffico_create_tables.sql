@@ -17,11 +17,53 @@
 --------------------------------------------------------------------------------
 
 
-DROP FUNCTION IF EXISTS traffico_create_tables(text, text, boolean);
+
+DROP FUNCTION IF EXISTS traffico_create_mviews(text);
+CREATE OR REPLACE FUNCTION traffico_create_mviews(
+  city_prefix text
+  )
+  RETURNS void AS
+  $$
+DECLARE
+  _tables text[];
+  _table text;
+BEGIN
+
+  _tables = ARRAY[
+      format('%s_waze_data_alerts', city_prefix),
+      format('%s_waze_data_jams', city_prefix),
+      format('%s_waze_data_irrgs', city_prefix)
+    ]::text[];
+
+  FOREACH _table IN ARRAY _tables
+    LOOP
+      EXECUTE format('
+        DROP MATERIALIZED VIEW IF EXISTS %1$s_mv;
+        CREATE MATERIALIZED VIEW %1$s_mv AS (
+          SELECT * FROM %1$s WHERE georss_date IS NOT NULL
+          AND georss_date=(SELECT MAX(georss_date) FROM %1$s)
+        );
+        CREATE INDEX %1$s_geom_idx
+          ON %1$s_mv USING gist (the_geom);
+        CREATE INDEX %1$s_geomwm_idx
+          ON %1$s_mv USING gist (the_geom_webmercator);
+        CREATE INDEX %1$s_cdbid_idx
+          ON %1$s_mv (cartodb_id);
+        CREATE INDEX %1$s_georssdate_idx
+          ON %1$s_mv (georss_date);
+        ', _table);
+    END LOOP;
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+DROP FUNCTION IF EXISTS traffico_create_tables(text, text, boolean, boolean);
 CREATE OR REPLACE FUNCTION traffico_create_tables(
   city_prefix text,
   carto_user text DEFAULT NULL::text,
-  clean_tables boolean DEFAULT FALSE
+  clean_tables boolean DEFAULT FALSE,
+  create_mviews boolean DEFAULT TRUE
   )
   RETURNS void AS
   $$
@@ -158,6 +200,10 @@ BEGIN
       ON %4$I (detectiondate);
     ', city_prefix, _alerts_tb, _jams_tb, _irregs_tb
     );
+
+  IF create_mviews then
+    PERFORM traffico_create_mviews(city_prefix);
+  END IF;
 
 END;
 $$ LANGUAGE plpgsql;

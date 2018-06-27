@@ -92,3 +92,13 @@ class WazeCartoModel(CartoModel):
                            ','.join(irrgs_vl).replace('None','NULL'))
 
             self.query(sql, write_qry=True)
+
+    def refresh_mviews(self):
+
+        sql = """
+            REFRESH MATERIALIZED VIEW {0}_waze_data_alerts_mv;
+            REFRESH MATERIALIZED VIEW {0}_waze_data_jams_mv;
+            REFRESH MATERIALIZED VIEW {0}_waze_data_irrgs_mv;
+            """.format(self.__city_prefix)
+
+        self.query(sql, write_qry=True)

@@ -85,7 +85,7 @@ class WazeData:
                     'date': self.__build_timestamp(date_wz),
                     'country': alert.get('country'),
                     'city': self.__format_text(alert.get('city')),
-                    'reportdescription': alert.get('reportDescription'),
+                    'reportdescription': self.__format_text(alert.get('reportDescription')),
                     'confidence': alert.get('confidence'),
                     'reportrating': alert.get('reportRating'),
                     'reliability': alert.get('reliability'),

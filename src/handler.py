@@ -41,6 +41,8 @@ def carto_waze_lambda_handler(event, context):
         waze_model.store_jams(jams_data)
         waze_model.store_irrgs(irrgs_data)
 
+        waze_model.refresh_mviews()
+
         response = {
             'statusCode': 200,
             'body': 'Function executed. GEORSS date: {}'.format(waze_st)
