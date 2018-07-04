@@ -25,8 +25,12 @@ CREATE OR REPLACE FUNCTION traffico_create_mviews(
   RETURNS void AS
   $$
 DECLARE
-  _tables text[];
   _table text;
+  _tables text[];
+  _arr_low text[];
+  _arr_medium text[];
+  _arr_high text[];
+  _alerts_type text:='';
 BEGIN
 
   _tables = ARRAY[
@@ -35,12 +39,66 @@ BEGIN
       format('%s_waze_data_irrgs', city_prefix)
     ]::text[];
 
+  _arr_low = ARRAY[
+    'WEATHER_HEAT_WAVE',
+    'HAZARD_ON_SHOULDER_MISSING_SIGN',
+    'HAZARD_ON_SHOULDER_ANIMALS',
+    'HAZARD_ON_SHOULDER_CAR_STOPPED',
+    'HAZARD_ON_ROAD_POT_HOLE',
+    'HAZARD_ON_ROAD_OBJECT',
+    'HAZARD_ON_ROAD_OBJECT',
+    'HAZARD_ON_SHOULDER',
+    'HAZARD_ON_ROAD',
+    'ROAD_CLOSED_EVENT',
+    'JAM_LIGHT_TRAFFIC',
+    'ACCIDENT_MINOR'
+  ];
+  _arr_medium = ARRAY[
+    'HAZARD_ON_ROAD_CONSTRUCTION',
+    'HAZARD_ON_ROAD_CONSTRUCTION',
+    'HAZARD_ON_ROAD_ICE',
+    'HAZARD_ON_ROAD_OIL',
+    'HAZARD_ON_ROAD_LANE_CLOSED',
+    'HAZARD_WEATHER_FREEZING_RAIN',
+    'HAZARD_WEATHER_HAIL',
+    'HAZARD_WEATHER_FOG',
+    'ROAD_CLOSED_CONSTRUCTION',
+    'JAM_MODERATE_TRAFFIC'
+  ];
+  _arr_high = ARRAY[
+    'HAZARD_ON_ROAD_CAR_STOPPED',
+    'HAZARD_WEATHER_HURRICANE',
+    'HAZARD_WEATHER_TORNADO',
+    'HAZARD_WEATHER_MONSOON',
+    'HAZARD_WEATHER_FLOOD',
+    'HAZARD_WEATHER_HEAVY_SNOW',
+    'HAZARD_WEATHER_HEAVY_RAIN',
+    'HAZARD_ON_ROAD_ROAD_KILL',
+    'ROAD_CLOSED_HAZARD',
+    'JAM_HEAVY_TRAFFIC',
+    'JAM_STAND_STILL_TRAFFIC',
+    'ACCIDENT_MAJOR'
+  ];
+
   FOREACH _table IN ARRAY _tables
     LOOP
+      IF _table ~ '_alerts$' then
+        _alerts_type = format('
+          ,CASE
+            WHEN subtype = ANY(%1$L) THEN type || %2$L
+            WHEN subtype = ANY(%3$L) THEN type || %4$L
+            WHEN subtype = ANY(%5$L) THEN type || %6$L
+            ELSE type || %2$L
+          END as type_level
+        ', _arr_low, '-low', _arr_medium, '-medium',
+          _arr_high, '-high'
+        );
+      END IF;
+
       EXECUTE format('
         DROP MATERIALIZED VIEW IF EXISTS %1$s_mv;
         CREATE MATERIALIZED VIEW %1$s_mv AS (
-          SELECT * FROM %1$s WHERE georss_date IS NOT NULL
+          SELECT * %2$s FROM %1$s WHERE georss_date IS NOT NULL
           AND georss_date=(SELECT MAX(georss_date) FROM %1$s)
         );
         CREATE INDEX %1$s_geom_idx
@@ -53,7 +111,7 @@ BEGIN
           ON %1$s_mv (georss_date);
 
         GRANT SELECT ON %1$s_mv TO publicuser;
-        ', _table);
+        ', _table, _alerts_type);
     END LOOP;
 
 END;
