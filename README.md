@@ -24,6 +24,14 @@ SELECT traffico_create_tables(
     );
 ```
 
+This function creates 3 tables and 3 materialized views:
+- {mycity}_waze_data_alerts
+- {mycity}_waze_data_jams
+- {mycity}_waze_data_irrgs
+- {mycity}_waze_data_alerts_mv
+- {mycity}_waze_data_jams_mv
+- {mycity}_waze_data_irrgs_mv
+
 ### 3. AWS Lambda deploy
 
 Create serverless YAML config file:
