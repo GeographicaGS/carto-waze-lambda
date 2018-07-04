@@ -93,8 +93,6 @@ BEGIN
         ', _arr_low, '-low', _arr_medium, '-medium',
           _arr_high, '-high'
         );
-      ELSE
-          _alerts_type = '';
       END IF;
 
       EXECUTE format('
