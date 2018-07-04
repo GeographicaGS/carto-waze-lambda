@@ -51,6 +51,8 @@ BEGIN
           ON %1$s_mv (cartodb_id);
         CREATE INDEX %1$s_georssdate_idx
           ON %1$s_mv (georss_date);
+
+        GRANT SELECT ON %1$s_mv TO publicuser;
         ', _table);
     END LOOP;
 
