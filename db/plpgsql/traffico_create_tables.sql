@@ -260,7 +260,7 @@ BEGIN
     );
 
   IF create_mviews then
-    PERFORM traffico_create_mviews(city_prefix);
+    EXECUTE traffico_create_mviews(city_prefix);
   END IF;
 
 END;
