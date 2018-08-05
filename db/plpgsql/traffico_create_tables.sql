@@ -30,7 +30,8 @@ DECLARE
   _arr_low text[];
   _arr_medium text[];
   _arr_high text[];
-  _alerts_type text:='';
+  _alerts_type text;
+  _res_q text;
 BEGIN
 
   _tables = ARRAY[
@@ -91,6 +92,8 @@ BEGIN
         ', _arr_low, '-low', _arr_medium, '-medium',
           _arr_high, '-high'
         );
+      ELSE
+        _alerts_type = '';
       END IF;
 
       EXECUTE format('
