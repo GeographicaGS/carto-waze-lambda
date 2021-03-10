@@ -119,12 +119,91 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-DROP FUNCTION IF EXISTS traffico_create_tables(text, text, boolean, boolean);
+DROP FUNCTION IF EXISTS traffico_create_historic_agg_tables(text, boolean);
+CREATE OR REPLACE FUNCTION traffico_create_historic_agg_tables(
+  city_prefix text,
+  clean_tables boolean DEFAULT FALSE
+  )
+  RETURNS void AS
+  $$
+DECLARE
+  _jams_agg_tb text;
+  _jams_agg_times_tb text;
+BEGIN
+  _jams_agg_tb = format('%s_waze_data_jams_agg_hour', city_prefix);
+  _jams_agg_times_tb = format('%s_waze_data_jams_agg_times', city_prefix);
+
+  IF clean_tables THEN
+    EXECUTE format('
+      DROP TABLE IF EXISTS %1$I CASCADE;
+      DROP TABLE IF EXISTS %2$I CASCADE;
+      ', _jams_agg_tb, _jams_agg_times_tb
+    );
+  END IF;
+
+  EXECUTE format('
+    CREATE TABLE %1$I (
+      georss_date timestamp without time zone,
+      ntram integer,
+      avg_level integer,
+      avg_speed double precision,
+      avg_length double precision,
+      duration_seconds integer,
+      alert_types text[],
+      alert_subtypes text[],
+      road_type integer
+    ) PARTITION BY RANGE(georss_date);
+
+    CREATE TABLE %2$I (
+      ntram integer,
+      start_ts timestamp without time zone,
+      end_ts timestamp without time zone
+    ) PARTITION BY RANGE(start_ts);
+
+    ', _jams_agg_tb, _jams_agg_times_tb
+  );
+
+  EXECUTE format('
+    -- jams agg
+
+    CREATE INDEX ON %1$I (georss_date);
+
+    CREATE INDEX ON %1$I ((georss_date::date));
+
+    CREATE INDEX ON %1$I (ntram);
+
+    -- jams times agg
+
+    CREATE INDEX ON %2$I (start_ts);
+
+    CREATE INDEX ON %2$I (end_ts);
+
+    CREATE INDEX ON %2$I (ntram);
+    ', _jams_agg_tb, _jams_agg_times_tb
+  );
+
+  EXECUTE format('
+    -- jams agg
+    GRANT SELECT ON %1$I TO publicuser;
+
+    -- jams times agg
+    GRANT SELECT ON %2$I TO publicuser;
+    ', _jams_agg_tb, _jams_agg_times_tb
+  );
+
+  RAISE NOTICE 'PARTITIONS ON %1 AND %2 MUST BE CREATED MANUALLY',
+    _jams_agg_tb, _jams_agg_times_tb;
+END;
+$$ LANGUAGE plpgsql;
+
+
+DROP FUNCTION IF EXISTS traffico_create_tables(text, text, boolean, boolean, boolean);
 CREATE OR REPLACE FUNCTION traffico_create_tables(
   city_prefix text,
   carto_user text DEFAULT NULL::text,
   clean_tables boolean DEFAULT FALSE,
-  create_mviews boolean DEFAULT TRUE
+  create_mviews boolean DEFAULT TRUE,
+  create_historic_agg_tables boolean DEFAULT FALSE
   )
   RETURNS void AS
   $$
@@ -264,6 +343,10 @@ BEGIN
 
   IF create_mviews then
     EXECUTE traffico_create_mviews(city_prefix);
+  END IF;
+
+  IF create_historic_agg_tables then
+    EXECUTE traffico_create_historic_agg_tables(city_prefix, clean_tables);
   END IF;
 
 END;
