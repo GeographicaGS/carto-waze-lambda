@@ -129,15 +129,18 @@ CREATE OR REPLACE FUNCTION traffico_create_historic_agg_tables(
 DECLARE
   _jams_agg_tb text;
   _jams_agg_times_tb text;
+  _jams_agg_levels_times_tb text;
 BEGIN
   _jams_agg_tb = format('%s_waze_data_jams_agg_hour', city_prefix);
   _jams_agg_times_tb = format('%s_waze_data_jams_agg_times', city_prefix);
+  _jams_agg_levels_times_tb = format('%s_waze_data_jams_agg_levels_times', city_prefix);
 
   IF clean_tables THEN
     EXECUTE format('
       DROP TABLE IF EXISTS %1$I CASCADE;
       DROP TABLE IF EXISTS %2$I CASCADE;
-      ', _jams_agg_tb, _jams_agg_times_tb
+      DROP TABLE IF EXISTS %3$I CASCADE;
+      ', _jams_agg_tb, _jams_agg_times_tb, _jams_agg_levels_times_tb
     );
   END IF;
 
@@ -160,7 +163,16 @@ BEGIN
       end_ts timestamp without time zone
     ) PARTITION BY RANGE(start_ts);
 
-    ', _jams_agg_tb, _jams_agg_times_tb
+    CREATE TABLE %3$I (
+      id text,
+      ntram integer,
+      level integer,
+      start_ts timestamp without time zone,
+      end_ts timestamp without time zone,
+      avg_speed double precision
+    ) PARTITION BY RANGE(start_ts);
+
+    ', _jams_agg_tb, _jams_agg_times_tb, _jams_agg_levels_times_tb
   );
 
   EXECUTE format('
@@ -179,7 +191,15 @@ BEGIN
     CREATE INDEX ON %2$I (end_ts);
 
     CREATE INDEX ON %2$I (ntram);
-    ', _jams_agg_tb, _jams_agg_times_tb
+
+    -- jams levels times agg
+
+    CREATE INDEX ON %3$I (start_ts);
+
+    CREATE INDEX ON %3$I (end_ts);
+
+    CREATE INDEX ON %3$I (ntram);
+    ', _jams_agg_tb, _jams_agg_times_tb, _jams_agg_levels_times_tb
   );
 
   EXECUTE format('
@@ -188,11 +208,14 @@ BEGIN
 
     -- jams times agg
     GRANT SELECT ON %2$I TO publicuser;
-    ', _jams_agg_tb, _jams_agg_times_tb
+
+    -- jams times agg
+    GRANT SELECT ON %3$I TO publicuser;
+    ', _jams_agg_tb, _jams_agg_times_tb, _jams_agg_levels_times_tb
   );
 
-  RAISE NOTICE 'PARTITIONS ON %1 AND %2 MUST BE CREATED MANUALLY',
-    _jams_agg_tb, _jams_agg_times_tb;
+  RAISE NOTICE 'PARTITIONS ON %1, %2 AND %3 MUST BE CREATED MANUALLY',
+    _jams_agg_tb, _jams_agg_times_tb, _jams_agg_levels_times_tb;
 END;
 $$ LANGUAGE plpgsql;
 

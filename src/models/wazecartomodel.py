@@ -265,3 +265,48 @@ class WazeCartoModel(CartoModel):
             self._logger.info(f'INSERT statement for chunk {chunk_n}/{n_chunks} executed!')
 
         self._logger.info('INSERT statement executed successfully for jams_agg_times!')
+
+    def store_aggregated_jams_levels_times(self, data):
+        insert_values = []
+
+        if not data:
+            return
+
+        self._logger.info('Creating INSERT statement for jams_agg_levels_times...')
+
+        for row in data:
+            value_stmt = (
+                '('
+                + f"'{row.id}', "
+                + f"{row.ntram}, "
+                + f"{row.level}, "
+                + f"'{row.start_ts}'::timestamp without time zone, "
+                + f"'{row.end_ts}'::timestamp without time zone, "
+                + f"{row.avg_speed}"
+                + ')'
+            )
+
+            insert_values.append(value_stmt)
+
+        chunk_size = 1000
+        chunks = [insert_values[i:i+chunk_size] for i in range(0, len(insert_values), chunk_size)]
+        n_chunks = len(chunks)
+
+        for chunk_n, chunk in enumerate(chunks, start=1):
+            insert_query = f"""
+                INSERT INTO {self.__city_prefix}_waze_data_jams_agg_levels_times
+                (id, ntram, level, start_ts, end_ts, avg_speed)
+                VALUES {','.join(chunk).replace('None', 'NULL')}
+            """
+
+            self._logger.info(
+                f'INSERT statement generated for chunk {chunk_n}/{n_chunks}'
+            )
+
+            self._logger.info(f'Executing INSERT statement for chunk {chunk_n}/{n_chunks}...')
+
+            self.query(insert_query, write_qry=True)
+
+            self._logger.info(f'INSERT statement for chunk {chunk_n}/{n_chunks} executed!')
+
+        self._logger.info('INSERT statement executed successfully for jams_agg_levels_times!')

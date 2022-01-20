@@ -28,3 +28,6 @@ def carto_waze_daily_agg_handler(event, context):
 
     agg_durations = waze_bq_model.get_aggregated_jams_durations_info()
     waze_carto_model.store_aggregated_jams_durations(agg_durations)
+
+    agg_levels_times = waze_bq_model.get_aggregated_jams_levels_times_info()
+    waze_carto_model.store_aggregated_jams_levels_times(agg_levels_times)

@@ -125,3 +125,24 @@ class WazeBigQueryModel(Model):
         self._logger.info('Aggregated jams and irregularities duration info retrieved!')
 
         return result
+
+    def get_aggregated_jams_levels_times_info(self):
+        self._logger.info(
+            'Retrieving aggregated levels duration data by road segment of yesterday'
+        )
+
+        yesterday_date_str = (
+            datetime.date.today() - datetime.timedelta(1.0)
+        ).isoformat()
+
+        query = f"""
+            SELECT *
+            FROM `{self.__table_id_prefix}.{self.__city_prefix}_waze_data_jams_agg_levels_times`
+            WHERE DATE(start_ts) = '{yesterday_date_str}'
+        """
+
+        result = self.__client.query(query).result()
+
+        self._logger.info('Aggregated jams and irregularities levels durations info retrieved!')
+
+        return result
