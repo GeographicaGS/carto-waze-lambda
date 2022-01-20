@@ -106,3 +106,9 @@ ENV/
 # mypy
 .mypy_cache/
 node_modules
+
+# GCloud Credentials
+gcloud-credentials.json
+
+# IDEs
+.vscode

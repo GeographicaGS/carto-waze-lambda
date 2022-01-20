@@ -13,29 +13,55 @@ service: carto-waze-mycity
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.8
   region: eu-west-1
 
 package:
   include:
    - src/**
+   - gcloud-credentials.json
   exclude:
    - config.env
    - node_modules/**
    - '!node_modules/node-fetch/**'
+   - .venv
 
 functions:
   georss:
     handler: src.handler.carto_waze_lambda_handler
-    timeout: 12
+    timeout: 30
     events:
       - schedule: rate(2 minutes)
     # environment:
     #   CARTO_API_KEY: ${env:CARTO_API_KEY}
     #   CARTO_USER: ${env:CARTO_USER}
+    #   CARTO_MAX_HOURS_DATA_RETENTION: ${env:CARTO_MAX_HOURS_DATA_RETENTION}
+    #   BIG_QUERY_ENABLE_HISTORIC: ${env:BIG_QUERY_ENABLE_HISTORIC}
+    #   BIG_QUERY_HISTORIC_PROJECT: ${env:BIG_QUERY_HISTORIC_PROJECT}
+    #   BIG_QUERY_HISTORIC_DATASET: ${env:BIG_QUERY_HISTORIC_DATASET}
     #   WAZE_API_URL: ${env:WAZE_API_URL}
     #   WAZE_TKN: ${env:WAZE_TKN}
     #   WAZE_PARTNER: ${env:WAZE_PARTNER}
+    #   WAZE_POLY: ${env:WAZE_POLY}
+    #   TRAFFICO_PREFIX: ${env:TRAFFICO_PREFIX}
+
+  daily-aggs:
+    handler: src.daily_agg_handler.carto_waze_daily_agg_handler
+    timeout: 900
+    events:
+      - schedule: cron(0 2 * * ? *)
+    # environment:
+    #   CARTO_API_KEY: ${env:CARTO_API_KEY}
+    #   CARTO_USER: ${env:CARTO_USER}
+    #   CARTO_MAX_HOURS_DATA_RETENTION: ${env:CARTO_MAX_HOURS_DATA_RETENTION}
+    #   BIG_QUERY_ENABLE_HISTORIC: ${env:BIG_QUERY_ENABLE_HISTORIC}
+    #   BIG_QUERY_HISTORIC_PROJECT: ${env:BIG_QUERY_HISTORIC_PROJECT}
+    #   BIG_QUERY_HISTORIC_DATASET: ${env:BIG_QUERY_HISTORIC_DATASET}
+    #   WAZE_API_URL: ${env:WAZE_API_URL}
+    #   WAZE_TKN: ${env:WAZE_TKN}
+    #   WAZE_PARTNER: ${env:WAZE_PARTNER}
+    #   WAZE_POLY: ${env:WAZE_POLY}
+    #   TRAFFICO_PREFIX: ${env:TRAFFICO_PREFIX}
 
 plugins:
   - serverless-python-requirements

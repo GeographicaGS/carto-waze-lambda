@@ -136,7 +136,7 @@ class WazeData:
 
             return jams
 
-    def build_irrgs(self):
+    def build_irrgs(self, alerts_array_as_str=True):
         irrgs_raw = self.__get_raw_irrgs()
 
         if irrgs_raw:
@@ -151,8 +151,11 @@ class WazeData:
 
                 alerts_arr = irrg.get('alerts')
                 if alerts_arr:
-                    alerts_uuid = ','.join(self.__quote_list(
-                        [al.get('uuid') for al in alerts_arr]))
+                    uuids = [al.get('uuid') for al in alerts_arr]
+                    if alerts_array_as_str:
+                        alerts_uuid = ','.join(self.__quote_list(uuids))
+                    else:
+                        alerts_uuid = uuids
                 else:
                     alerts_uuid = None
 

@@ -7,27 +7,19 @@ Developed by Geographica, 2017-2018.
 import re
 from carto.auth import APIKeyAuthClient
 from carto.sql import SQLClient
-from src.logger import Logger
+from src.models.base import Model
 
 
 class CartoModelException(Exception):
     pass
 
-class CartoModel:
 
+class CartoModel(Model):
     def __init__(self, carto_api_key, carto_user, verbose=True):
+        super().__init__(verbose)
+
         self.__carto_api_key = carto_api_key
         self.__carto_user = carto_user
-
-        self.__logger = self.load_logger(verbose)
-
-    def load_logger(self, verbose):
-        if not verbose:
-            lg = Logger(level='ERROR')
-        else:
-            lg = Logger()
-
-        return lg.get()
 
     @staticmethod
     def __get_auth_client(api_key, carto_user):
@@ -53,5 +45,5 @@ class CartoModel:
             return res['rows']
 
         except Exception as err:
-            self.__logger.error("Error sending query to Carto: {0}\n{1}".format(err, sql_query))
+            self._logger.error("Error sending query to Carto: {0}\n{1}".format(err, sql_query))
             raise CartoModelException(err)
